@@ -9,14 +9,14 @@ import pandas as pd
 import cv2
 import pickle
 
-dfPos = pd.read_csv('C:\\Users\\weissmce\\Desktop\\GitREPO\\hVh\\valiPosPairs.csv')
-dfNeg = pd.read_csv('C:\\Users\\weissmce\\Desktop\\GitREPO\\hVh\\valiNegPairs.csv')
+dfPos = pd.read_csv('C:\\Users\\weissmce\\Desktop\\Please\\hVh\\posPairs.csv')
+dfNeg = pd.read_csv('C:\\Users\\weissmce\\Desktop\\Please\\hVh\\negPairs.csv')
 pairs = []
 labels = []
 
 #265300
-directory = 'C:\\Users\\weissmce\\Desktop\\GitREPO\\hVh\\horse-or-human\\validation\\Both\\'
-for x in range(6000):
+directory = 'C:\\Users\\weissmce\\Desktop\\Please\\hVh\\horse-or-human\\train\\Both\\'
+for x in range(18000, 20000):
     #for x in range(14000):
     print(x)
     negName1 = dfNeg['Img1'][x] #gerts image name
@@ -43,10 +43,10 @@ for x in range(6000):
 
 
 
-#pickle_out = open("C:\\Users\\weissmce\\Desktop\\GitRepo\\hvh\\ValidationLabels.pickle", "wb")
+#pickle_out = open("C:\\Users\\weissmce\\Desktop\\Please\\hvh\\TrainLabels.pickle", "wb")
 #pickle.dump(labels, pickle_out)
 #pickle_out.close()
 
-pickle_out1 = open("C:\\Users\\weissmce\\Desktop\\GitREPO\\hvh\\Validation.pickle", "wb")
+pickle_out1 = open("C:\\Users\\weissmce\\Desktop\\Please\\hvh\\TrainPairs10.pickle", "wb")
 pickle.dump(pairs, pickle_out1)
 pickle_out1.close()
