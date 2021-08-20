@@ -10,31 +10,41 @@ import os
 import numpy
 import pickle
 
-
-directory = 'C:\\Users\\weissmce\\Desktop\\GitREPO\\hVh\\horse-or-human\\validation\\horses\\'
+"""
+directory = 'C:\\Users\\weissmce\\Desktop\\GitREPO\\hVh\\horse-or-human\\train\\horses\\'
 count = 0
-img1 = cv2.imread('C:\\Users\\weissmce\\Desktop\\GitREPO\\hVh\\horse-or-human\\validation\\horses\\horse1-000.png')
-img1 = img1.reshape(-1, 30, 30, 3)
+img1 = cv2.imread('C:\\Users\\weissmce\\Desktop\\GitREPO\\hVh\\horse-or-human\\train\\horses\\horse01-0.png')
+#img1 = img1.reshape(-1, 300, 300, 3)
+img1 = img1.flatten()
 validationPixelVals = img1
 for filename in os.listdir(directory):
     img = cv2.imread(directory + filename)
-    img = img.reshape(-1, 30, 30, 3)
+    #img = img.reshape(-1, 300, 300, 3)
+    arr = img.flatten()
     count = count +1
-    validationPixelVals += img
+    validationPixelVals = numpy.vstack((validationPixelVals, arr))
+    #validationPixelVals += arr
 
+output_file = 'C:\\Users\\weissmce\\Desktop\\GitREPO\\hVh\\TrainingPixel0.csv'
+#where to save the csv file
+numpy.savetxt(output_file, validationPixelVals, fmt= "%10.5f", delimiter=',')
+"""
 
+directory = 'C:\\Users\\weissmce\\Desktop\\GitREPO\\hVh\\horse-or-human\\train\\humans\\'
 
-
-directory = 'C:\\Users\\weissmce\\Desktop\\GitREPO\\hVh\\horse-or-human\\validation\humans\\'
-
-img1 = cv2.imread('C:\\Users\\weissmce\\Desktop\\GitREPO\\hVh\\horse-or-human\\validation\\humans\\valhuman01-00.png')
-#img1 = img1.reshape(-1, 30, 30, 3)
+img1 = cv2.imread('C:\\Users\\weissmce\\Desktop\\GitREPO\\hVh\\horse-or-human\\train\\humans\\human01-08.png')
+#img1 = img1.reshape(-1, 300, 300, 3)
+img1 = img1.flatten()
 trainingPixelVals = img1
 for filename in os.listdir(directory):
     img = cv2.imread(directory + filename)
-    #img = img.reshape(-1, 30, 30, 3)
-    trainingPixelVals += img
+    #img = img.reshape(-1, 300, 300, 3)
+    arr = img.flatten()
+    trainingPixelVals = numpy.vstack((trainingPixelVals, arr))
 
+output_file = 'C:\\Users\\weissmce\\Desktop\\GitREPO\\hVh\TrainingPixel2.csv'
+#where to save the csv file
+numpy.savetxt(output_file, trainingPixelVals, fmt= "%10.5f", delimiter=',')
 
 """
 pickle_out1 = open("C:\\Users\\weissmce\\Desktop\\GitREPO\\hvh\\ValidationPixel1.pickle", "wb")

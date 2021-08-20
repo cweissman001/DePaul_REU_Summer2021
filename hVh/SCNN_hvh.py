@@ -62,6 +62,8 @@ def create_base_network(input_shape):
     #maybe more filters than needed
     x = Conv2D(32, kernel_size=3, activation='relu', input_shape=input_shape,padding='same')(x)
     x= tf.keras.layers.AveragePooling2D()(x)
+    x = Conv2D(32, kernel_size=3, activation='relu', input_shape=input_shape,padding='same')(x)
+    x= tf.keras.layers.AveragePooling2D()(x)
     #34X34
     x = Conv2D(32, kernel_size=3, activation='relu', padding='same')(x)
     x= tf.keras.layers.AveragePooling2D()(x)
@@ -72,6 +74,10 @@ def create_base_network(input_shape):
     x = Flatten()(x) #take out one of the dense layers
     x = Dropout(0.3)(x)
     x = Dense(512, activation='relu')(x)
+    x = Dropout(0.2)(x)
+    x = Dense(256, activation='relu')(x)
+    x = Dropout(0.1)(x)
+    x = Dense(128, activation='relu')(x)
     
 
     
@@ -105,7 +111,7 @@ def accuracy(y_true, y_pred):
     '''Compute classification accuracy with a fixed threshold on distances.
     '''
     return K.mean(K.equal(y_true, K.cast(y_pred < 0.5, y_true.dtype)))
-
+"""
 filepath ='/content/drive/MyDrive/MedIx REU/Datasets/'
 
 train = pd.read_csv(filepath + 'TrainPixel.csv')
@@ -129,7 +135,7 @@ test_ids = np.array(test_ids)
 
 train = train.astype('float32')
 test = test.astype('float32')
-
+"""
 input_shape = (300, 300, 3)
 #train_data.shape[1:]
 #train.shape[1:]
@@ -141,30 +147,30 @@ print("loading pairs...")
 
 ##calling on postive and negative pairs
 #train data
-path = "/content/drive/MyDrive/"
-pickle_in = open(path + "TrainPairsTEST.pickle", "rb")
+path = "/content/drive/MyDrive/MedIx REU/horseVhumans/"
+pickle_in = open(path + "TrainPairs9.pickle", "rb")
 trainPixel = pickle.load(pickle_in)
 trainPixel = np.asarray(trainPixel)
-tr_pairs = trainPixel.reshape(20,2,300,300,3)
+tr_pairs = trainPixel.reshape(4000,2,300,300,3)
 
 #train labels
-pickle_in = open(path + "TrainLabelsTEST.pickle", "rb")
+pickle_in = open(path + "TrainLabels.pickle", "rb")
 tr_y = pickle.load(pickle_in)
 tr_y = np.array(tr_y)
 
 #test data
-#pickle_in = open(path + "TestPairs.pickle", "rb")
-#testPixel = pickle.load(pickle_in)
-#testPixel = np.array(testPixel)
-#print(testPixel.shape)
-#te_pairs = testPixel.reshape(12398,2,71,71,1)
+pickle_in = open(path + "Validation.pickle", "rb")
+testPixel = pickle.load(pickle_in)
+testPixel = np.array(testPixel)
+print(testPixel.shape)
+te_pairs = testPixel.reshape(4000,2,300,300,3)
 
 #test labels
-#pickle_in = open(path + "TestLabel.pickle", "rb")
-#te_y = pickle.load(pickle_in)
-#te_y = np.array(te_y)
+pickle_in = open(path + "ValidationLabels.pickle", "rb")
+te_y = pickle.load(pickle_in)
+te_y = np.array(te_y)
 
-#print("pairs loaded")
+print("pairs loaded")
 
 # network definition
 base_network = create_base_network(input_shape)
@@ -184,7 +190,7 @@ distance = Lambda(euclidean_distance,
 
 model = Model([input_a, input_b], distance)  #think we are shaping our model 
 
-#model.load_weights("/content/drive/MyDrive/MedIx REU/Datasets/Saved Weights/weights.ckpt")
+model.load_weights("/content/drive/MyDrive/Saved Weights/weights.ckpt")
 rms = RMSprop()
 #metrics=['binary_accuracy', 'categorical_accuracy']
 model.compile(loss=contrastive_loss, optimizer='adam', metrics=[accuracy])
@@ -192,30 +198,26 @@ model.compile(loss=contrastive_loss, optimizer='adam', metrics=[accuracy])
     #tfa.losses.TripletSemiHardLoss()
 history = model.fit([tr_pairs[:, 0], tr_pairs[:, 1]], tr_y,
           batch_size=128,
-          epochs=epochs)
-          #validation_data=([te_pairs[:, 0], te_pairs[:, 1]], te_y))
+          epochs=epochs,
+          validation_data=([te_pairs[:, 0], te_pairs[:, 1]], te_y))
 
 
 # compute final accuracy on training and test sets
 y_pred_tr_before = model.predict([tr_pairs[:, 0], tr_pairs[:, 1]])
 y_pred_tr = (y_pred_tr_before - y_pred_tr_before.min()) / (y_pred_tr_before.max() - y_pred_tr_before.min())
 
-#y_prob = model.predict_proba([tr_pairs[:, 0], tr_pairs[:, 1]]) --doesnt exisit 
-#test_scores = model.evaluate(tr_y, y_pred_tr, verbose=2)
 
 tr_acc = compute_accuracy(tr_y, y_pred_tr)
 
 
 """ use for training run when validation is included
 """
-#y_pred_te_before = model.predict([te_pairs[:, 0], te_pairs[:, 1]])
-#y_pred_te = (y_pred_te_before - y_pred_te_before.min()) / (y_pred_te_before.max() - y_pred_te_before.min())
+y_pred_te_before = model.predict([te_pairs[:, 0], te_pairs[:, 1]])
+y_pred_te = (y_pred_te_before - y_pred_te_before.min()) / (y_pred_te_before.max() - y_pred_te_before.min())
 
-#te_acc = compute_accuracy(te_y, y_pred_te)
+te_acc = compute_accuracy(te_y, y_pred_te)
 
 print('* Accuracy on training set: %0.2f%%' % (100 * tr_acc))
-#print('* Accuracy on test set: %0.2f%%' % (100 * te_acc))
-#base_network.save("/content/drive/MyDrive/MedIx REU/Datasets/my model")
-#model.save_weights("/content/drive/MyDrive/MedIx REU/Datasets/Saved Weights/weights.ckpt")
-
-import matplotlib.pyplot as plt
+print('* Accuracy on test set: %0.2f%%' % (100 * te_acc))
+base_network.save("/content/drive/MyDrive/MedIx REU/horseVhumans/my model")
+model.save_weights("/content/drive/MyDrive/Saved Weights/weights.ckpt")

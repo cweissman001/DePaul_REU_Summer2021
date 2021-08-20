@@ -6,7 +6,9 @@ GetPairPixelVals --> Takes the pair lists and outputs file with the pixel vals o
 
 PNGtoPixel --> takes in PNG and outputs the pixel arrays
 
-SCNN_hvh --> network for horses and humans
+SCNN_hvh --> network for horses and humans -->final strucutre in paper
+
+hvh_Test --> file that loads in the saved model and runs all of the data through the uncertainty metric
 
 negpPairs --negative training pairs
 
@@ -27,3 +29,5 @@ validationPix --> pixel values of all of the validation pngs
 valiNegPairs --> validation negtaive pairs
 
 valiPosPairs --> validation positive pairs
+
+my model --> the saved model from the horses versus humans trained network
