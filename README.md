@@ -1,3 +1,9 @@
+Collection of work done on Medical Imaging Research Project at DePaul University Summer of 2021. Work was completed with the mentorship of Dr. Roselyne Tchoua and the participation of undergraduates Lilly Roelofs and Claire Weissman. More recent more is held is repository: DePaul_Medical_Imaging_Research
+
+
+
+
+
 "# REU_SCNN" 
 #my model --saved folder for ther final model of the SCNN format used on the LIDC data
 
